@@ -1,0 +1,54 @@
+
+
+html,body{
+    height:100%;
+    margin: 0;
+    display:flex;
+    flex-direction: row;
+    text-align: left;
+    overflow: hidden;
+    font-family: monospace;
+    
+}
+canvas {
+    background-color: white;
+    border: 0.25rem solid black;
+    padding: 0.25rem;
+    margin: 1rem;
+    height: min-content;
+    width: min-content;
+}
+
+button,input{
+
+    padding: 0.25rem;
+    border: 0.25rem ridge black;
+    color: black;
+    height: min-content;
+    width: fit-content;
+}
+
+button:hover{
+    color: grey;
+}
+button:disabled{
+    opacity: 50%;
+}
+
+div.group{
+margin-bottom: 1rem;
+display: flex;
+flex-direction: column;
+
+}
+
+div.sidebar{
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+input.label{
+    background-color: slategrey;
+    color: white;
+}
