@@ -34,6 +34,7 @@ let wincondition = 4;
 
 let mouseX = scale_divider/2;
 let CurrentPlayerdisplay = document.getElementById("CurrentPlayer");
+CurrentPlayerdisplay.value = "";
 let Playerlistdisplay = document.getElementById("PlayerList");
 // piece (ein block)
 
