@@ -31,9 +31,6 @@ button,input{
 button:hover{
     color: grey;
 }
-button:disabled{
-    opacity: 50%;
-}
 
 div.group{
 margin-bottom: 1rem;
@@ -48,7 +45,17 @@ div.sidebar{
     flex-direction: column;
 }
 
-input.label{
+input.label,div.label{
     background-color: slategrey;
     color: white;
+}
+
+div.border{
+    padding: 0.25rem;
+    border: 0.25rem solid black;
+}
+
+div.borderridge{
+    padding: 0.25rem;
+    border: 0.25rem ridge black;
 }

@@ -14,21 +14,38 @@
     <canvas id="canvas"></canvas>
 
     <div class="sidebar">
+        
+        <div class="group border" >
 
-        <div class="group">
-            <input type="text" id="PlayerNameInpt" value="Player 1">
-            <button onclick="addplayer(this);" >Add Player</button> 
-        </div>
-
+        
         <div class="group" >
             <input type="text" disabled value="Current Player" class="label">
             <input type="text" id="CurrentPlayer" value="" disabled>
             
         </div>
+        
+        <div class="group borderridge" id="PlayerList" >
+            <div class="label"> Player List  </div>
+            
+        </div>
+        </div>
+
+        <div class="group border" id="settings" >
+        <div class="group">
+            <input type="text" id="PlayerNameInpt" value="Player 1" placeholder="Enter a player name">
+            <button onclick="addplayer(this);" >Add Player</button> 
+        </div>
+
 
         <div class="group" >
             <input type="number" id="winconditioninpt" value="4">
-            <button onclick="wincondition = parseInt(this.parentElement.firstElementChild.value)" >Set win conditon</button> 
+            <button onclick="setwincon(this);" >Set win condition</button> 
+        </div>
+
+
+        <div class="group">
+            <button onclick="setTimeout(()=>{startgame()},10) " >Start Game</button> 
+        </div>
         </div>
 
     </div>

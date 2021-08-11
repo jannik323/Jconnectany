@@ -15,32 +15,33 @@ let scale_divider = 20;
 let scale = can.width/scale_divider;
 let ctx = can.getContext("2d");
 
-const KEYS = {};
 const PLAYERS = [];
 
-const COLORS = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
-'#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-'#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
-'#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-'#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', 
-'#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-'#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', 
-'#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-'#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
-'#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+const COLORS = [
+"#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", 
+"#E6B333", "#3366E6", "#999966", "#99FF99", "#B34D4D",
+"#80B300", "#809900", "#E6B3B3", "#6680B3", "#66991A", 
+"#FF99E6", "#CCFF1A", "#FF1A66", "#E6331A", "#33FFCC",
+"#66994D", "#B366CC", "#4D8000", "#B33300", "#CC80CC", 
+"#66664D", "#991AFF", "#E666FF", "#4DB3FF", "#1AB399",
+"#E666B3", "#33991A", "#CC9999", "#B3B31A", "#00E680", 
+"#4D8066", "#809980", "#E6FF80", "#1AFF33", "#999933",
+"#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#9900B3", 
+"#E64D66", "#4DB380", "#FF4D4D", "#99E6E6", "#6666FF"];
 
 let Playerturn = 0;
 let wincondition = 4;
 
-let mouseX = 0;
+let mouseX = scale_divider/2;
 let CurrentPlayerdisplay = document.getElementById("CurrentPlayer");
+let Playerlistdisplay = document.getElementById("PlayerList");
 // piece (ein block)
 
 class block {
 
-    constructor(x,y,parent){
+    constructor(x,parent){
         this.x = x;
-        this.y = y;
+        this.y = 0;
         this.yvel = 1;
         this.parent = parent;
         
@@ -75,7 +76,7 @@ class block {
         
         ctx.font = scale/2+"px Arial";
         ctx.fillStyle= "white";
-        ctx.fillText( this.parent.name[0], scale*this.x+(scale/4),scale*this.y+(scale/2),scale);
+        ctx.fillText( this.parent.name[0], scale*this.x+(scale/4),scale*this.y+(scale/1.5),scale);
         ctx.strokeStyle = "black"
 
 
@@ -97,7 +98,7 @@ class player{
         this.index = index;
         this.BLOCKS = [];
         this.GRID = [[]];
-        this.color = COLORS[index];
+        this.color = COLORS[randomrange(0, COLORS.length)];
         
     }
 
@@ -107,7 +108,6 @@ class player{
         if(Playerturn === this.index){
 
             CurrentPlayerdisplay.value = this.name;
-            if(KEYS["s"]){this.dropblock()}
             this.x = mouseX;
             if(this.x > scale_divider-1 || this.x < 0){this.x = scale_divider/2}
 
@@ -129,7 +129,7 @@ class player{
     }
 
     spawnblock = function(x){
-        const newblock = new block(x,0,this);
+        const newblock = new block(x,this);
         this.BLOCKS.push(newblock);
     }
 
@@ -146,17 +146,31 @@ class player{
                     
                     for(let i = 1; i<wincondition; i++){
                         if(y+i-1 < (scale_divider*ratio)-1){
-                        if(this.GRID[y+i][x] !== true){return}
+                        if(this.GRID[y+i][x] !== true){break;}
                         // this.GRID[y+i][x] = false;
-                        if(i === wincondition-1 ){winner(this.name)}
+                        if(i === wincondition-1 ){winner(this)}
                     }}
 
                     for(let i = 1; i<wincondition; i++){
                         if(x+i-1 < scale_divider-1){
-                        if(this.GRID[y][x+i] !== true){return}
+                        if(this.GRID[y][x+i] !== true){break;}
                         // this.GRID[y][x+i] = false;
-                        if(i === wincondition-1 ){winner(this.name)}
+                        if(i === wincondition-1 ){winner(this)}
                     }}
+
+                    for(let i = 1; i<wincondition; i++){
+                        if(x+i-1 < scale_divider-1 && y+i-1 < (scale_divider*ratio)-1){
+                        if(this.GRID[y+i][x+i] !== true){break;}
+                        if(i === wincondition-1 ){winner(this)}
+                    }}
+
+                    for(let i = 1; i<wincondition; i++){
+                        if(x+i-1 > -1 && y+i-1 < (scale_divider*ratio)-1){
+                        if(this.GRID[y+i][x-i] !== true){break;}
+                        if(i === wincondition-1 ){winner(this)}
+                    }}
+
+
                 }
             
         })  })
@@ -177,7 +191,16 @@ class player{
 
 
 //start game
-window.requestAnimationFrame(main); 
+
+function startgame(){
+    if(PLAYERS.length > 0){
+        window.requestAnimationFrame(main); 
+        document.getElementById("settings").style.display = "none";
+    }else{
+        alert('You need at least one player !');
+    }
+}
+
 //loop loop
 function main(currentTime){
 window.requestAnimationFrame(main);
@@ -208,8 +231,13 @@ function render(){
 // spawn player
 
 function spawnplayer(name){
-const newplayer = new player(name,PLAYERS.length);
-PLAYERS.push(newplayer);
+    const newplayer = new player(name,PLAYERS.length);
+    PLAYERS.push(newplayer);
+
+    
+    let playerforlist = document.createElement('div');
+    playerforlist.innerHTML = name;
+    Playerlistdisplay.appendChild(playerforlist);
 }
 
 // next player
@@ -224,30 +252,37 @@ function nextplayer(increment = 0.5){
 
 function addplayer(self){
     let input = self.parentElement.firstElementChild;
-    if(input.value !== null && input.value !== undefined){
+    if(input.value.length > 0){
     spawnplayer(input.value); 
     input.value = "Player "+ (PLAYERS.length+1) ;}
+}
+
+// button win con
+
+function setwincon(self){
+let newwincon = parseInt(self.parentElement.firstElementChild.value);
+if(newwincon > 1){
+    wincondition = newwincon;
+}else{alert("The win condition has to be above 1")}
 }
 
 // winner winner chicken dinner
 
 function winner(winner){
+    Playerturn = winner.index;
     render();
     GameSpeed = 0;
     ctx.font = "30px Arial";
     ctx.fillStyle = "grey";
-    ctx.fillText( "The player "+winner+ " has won !", scale, scale*scale_divider/2*ratio);
+    ctx.fillText( "The player "+winner.name+ " has won !", scale, scale*scale_divider/2*ratio);
 }
 
+// random 
 
-addEventListener("keydown", e => {
-    KEYS[e.key] = true;
-    // console.log(KEYS);
-});
+function randomrange(min, max) { 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
 
-addEventListener("keyup", e => {
-    KEYS[e.key] = false;
-});
 
 onmousemove = function(e){
     var rect = canvas.getBoundingClientRect();
