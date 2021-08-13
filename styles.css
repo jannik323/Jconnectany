@@ -13,7 +13,6 @@ html,body{
 canvas {
     background-color: white;
     border: 0.25rem solid black;
-    padding: 0.25rem;
     margin: 1rem;
     height: min-content;
     width: min-content;

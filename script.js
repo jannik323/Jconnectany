@@ -1,19 +1,22 @@
 "use strict";
 
-let can = document.getElementById("canvas");
-
-
 const cPi = Math.PI;
 let GameSpeed = 60;
 
 let lastRenderTime = 0;
+let startedgame = false;
 
-let ratio = 1;
+let scale_divider,scale,ctx,ratio;
+let can = document.getElementById("canvas");
+ctx = can.getContext("2d");
+ctx.strokeStyle = "black";
+ctx.lineWidth = 10;
+
+ratio = 1;
 can.width = 6*window.innerHeight/9;
 can.height = (6*window.innerHeight/9)*ratio;
-let scale_divider = 20;
-let scale = can.width/scale_divider;
-let ctx = can.getContext("2d");
+
+setcanvas(8);
 
 const PLAYERS = [];
 
@@ -69,17 +72,16 @@ class block {
     
     render = function(color){
         
-        ctx.lineWidth = 3;
+        
         ctx.fillStyle= color;
         ctx.fillRect(scale*this.x,scale*this.y,scale , scale);
-        if(Playerturn === this.parent.index){ctx.strokeStyle = "grey"}else{ctx.strokeStyle = "black"}
-        ctx.strokeRect(scale*this.x,scale*this.y,scale , scale);
+        if(Playerturn === this.parent.index){
+            ctx.globalAlpha = 0.5
+            ctx.strokeRect(scale*this.x,scale*this.y,scale , scale);
+            ctx.globalAlpha = 0.8;
+        }
         
-        ctx.font = scale/2+"px Arial";
-        ctx.fillStyle= "white";
-        ctx.fillText( this.parent.name[0], scale*this.x+(scale/4),scale*this.y+(scale/1.5),scale);
-        ctx.strokeStyle = "black"
-
+        
 
     }
     
@@ -122,10 +124,14 @@ class player{
 
         this.BLOCKS.forEach(v=>{v.render(this.color);})
         if(Playerturn === this.index){
-        ctx.lineWidth = 3;
         ctx.fillStyle= this.color;
         ctx.fillRect(scale*this.x,0,scale , scale);
+        ctx.lineWidth = 5;
+
+        ctx.globalAlpha = 0.5
         ctx.strokeRect(scale*this.x,0,scale , scale);
+        ctx.globalAlpha = 0.8;
+
         }
     }
 
@@ -197,6 +203,7 @@ function startgame(){
     if(PLAYERS.length > 0){
         window.requestAnimationFrame(main); 
         document.getElementById("settings").style.display = "none";
+        startedgame = true;
     }else{
         alert('You need at least one player !');
     }
@@ -262,9 +269,33 @@ function addplayer(self){
 
 function setwincon(self){
 let newwincon = parseInt(self.parentElement.firstElementChild.value);
-if(newwincon > 1){
+if(newwincon > 1 && newwincon < scale_divider ){
     wincondition = newwincon;
-}else{alert("The win condition has to be above 1")}
+}else{
+    if(newwincon > scale_divider){
+        alert("The win condition has to be under "+ scale_divider)
+    }else{
+        alert("The win condition has to be above 1")
+    }
+    }
+}
+
+
+// canvas size
+
+function setcanvasbtn(self){
+    let newscale = parseInt(self.parentElement.firstElementChild.value);
+    if(newscale > wincondition){
+        setcanvas(newscale);
+    }else{alert("The board size has to be above "+ wincondition)}
+    }
+
+function setcanvas(newscale){
+
+    scale_divider = newscale;
+    scale = can.width/scale_divider;
+
+
 }
 
 // winner winner chicken dinner
@@ -291,7 +322,7 @@ onmousemove = function(e){
 }
 
 onclick = function(e){
-    if(mouseX < scale_divider && mouseX >= 0){
+    if(mouseX < scale_divider && mouseX >= 0 && startedgame){
         PLAYERS.forEach(v=>{v.dropblock()});
     }
 
